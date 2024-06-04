@@ -46,7 +46,7 @@ const updateLastLogin = async (req, res) => {
       );
       res
         .status(StatusCodes.OK)
-        .json({ success: true, message: "last login time updated", user });
+        .json({ success: true, message: "last login time updated", data:user });
     }
   } catch (error) {
     res
@@ -75,7 +75,7 @@ const updateUser = async (req, res) => {
       );
       res
         .status(StatusCodes.OK)
-        .json({ success: true, message: "user data updated", user });
+        .json({ success: true, message: "user data updated", data:user });
     }
   } catch (error) {
     res
@@ -97,7 +97,7 @@ const updateRole = async (req, res) => {
       user = await User.findOneAndUpdate({ email }, { role }, { new: true });
       res
         .status(StatusCodes.OK)
-        .json({ success: true, message: "user role updated", user });
+        .json({ success: true, message: "user role updated", data:user });
     }
   } catch (error) {
     res
@@ -141,7 +141,7 @@ const getUsers = async (req, res) => {
     }
     res
       .status(StatusCodes.OK)
-      .json({ success: true, message: "All users", users, totalUsers});
+      .json({ success: true, message: "All users", data:users, total:totalUsers});
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)

@@ -56,7 +56,7 @@ const isAdmin = async (req, res, next) => {
   catch (error) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: "Internal Server Error" });
+      .json({ success: false, message: "Internal Server Error-admin" });
   }
 }
 module.exports = { isLoggedIn, isTrainer, isAdmin };
