@@ -1,0 +1,37 @@
+{
+  "name": "fitness-tracker-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaudhuree/fitness-tracker-server.git"
+  },
+  "keywords": [],
+  "author": "chaudhuree",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chaudhuree/fitness-tracker-server/issues"
+  },
+  "homepage": "https://github.com/chaudhuree/fitness-tracker-server#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
+    "express-rate-limit": "^7.2.0",
+    "helmet": "^7.1.0",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.6.1",
+    "mongoose": "^7.0.3",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.13",
+    "nodemon": "^3.1.0",
+    "xss-clean": "^0.1.4"
+  }
+}
