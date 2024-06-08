@@ -17,9 +17,9 @@ const ClassBookingSchema = new mongoose.Schema(
       enum: ["basic", "standard", "premium"],
       default: "basic",
     },
-    status: {
+    paymentStatus: {
       type: String,
-      enum: ["pending", "approved", "cancelled"],
+      enum: ["pending", "approved", "cancelled", "refunded"],
       default: "pending",
     },
     traisactionId: {
