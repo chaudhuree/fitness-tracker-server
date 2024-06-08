@@ -26,6 +26,25 @@ const addSubscriber = async (req, res) => {
 
 // send updates to subscribers
 // TODO: send updates to subscribers
+const sendUpdates = async (req, res) => {
+  const { message } = req.body;
+  try{
+    // get all subscribers
+    const subscribers = await NewsLetter.find();
+    // send updates to subscribers
+    subscribers.forEach(subscriber => {
+      // send an email to each subscriber
+      console.log('Sending email to: ', subscriber.email, ' with updates');
+    });
+    // for each subscriber, send an email with the updates
+    // use nodemailer to send emails
+  }
+  catch(error){
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: error.message });
+  }
+}
 
 
-module.exports = { addSubscriber };
+module.exports = { addSubscriber, sendUpdates };
