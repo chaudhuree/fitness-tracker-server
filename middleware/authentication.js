@@ -59,4 +59,22 @@ const isAdmin = async (req, res, next) => {
       .json({ success: false, message: "Internal Server Error-admin" });
   }
 }
-module.exports = { isLoggedIn, isTrainer, isAdmin };
+
+//  check if user is trainer or admin
+const isTrainerOrAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user);
+    if (user.role === "trainer" || user.role === "admin") {
+      next();
+    } else {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ success: false, message: "Forbidden" });
+    }
+  } catch (error) {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+module.exports = { isLoggedIn, isTrainer, isAdmin, isTrainerOrAdmin };

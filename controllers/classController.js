@@ -77,7 +77,7 @@ const getClasses = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({
       success: true,
-      data: { classes, total:count },
+      data: { classes, total: count },
     });
   } catch (error) {
     res
@@ -104,4 +104,4 @@ const getClass = async (req, res) => {
       .json({ success: false, message: error.message });
   }
 };
-module.exports = { addClass,updateClass,deleteClass,getClasses,getClass };
+module.exports = { addClass, updateClass, deleteClass, getClasses, getClass };
