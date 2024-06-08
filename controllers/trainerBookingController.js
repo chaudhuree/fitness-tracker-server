@@ -106,7 +106,7 @@ const getAllUserBookings = async (req, res) => {
 
 // get all data of using trainer and date and slot time
 const getTrainerBookingByDate = async (req, res) => {
-  const { trainerId, date, scheduleTime } = req.body;
+  const { trainerId, date, scheduleTime } = req.query;
   try {
     if (scheduleTime) {
       const trainerBookings = await TrainerBooking.find({
