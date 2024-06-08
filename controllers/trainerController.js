@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const Trainer = require("../models/Trainer");
-
+const TrainerBooking = require("../models/TrainerBooking");
 // add a new trainer
 const addTrainer = async (req, res) => {
   try {
@@ -47,46 +47,6 @@ const updateTrainer = async (req, res) => {
   }
 };
 
-// update break time for a trainer -> break time(true/false)
-const updateBreakTime = async (req, res) => {
-  try {
-    const { id: trainerId } = req.params;
-    const { slotName, scheduleTime, breakValue } = req.body;
-
-    // find the trainer
-    const trainerInstance = await Trainer.findById(trainerId);
-    if (!trainerInstance) {
-      res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Trainer not found" });
-      return;
-    }
-
-    // find the slot time
-    const slotTime = trainerInstance.slotTime.find(
-      (slot) => slot.slotName === slotName && slot.scheduleTime === scheduleTime
-    );
-    if (!slotTime) {
-      res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Slot time not found" });
-      return;
-    }
-    // update the break time
-    slotTime.break = breakValue;
-    await trainerInstance.save();
-    res.status(StatusCodes.OK).json({
-      success: true,
-      data: trainerInstance,
-      message: "Break time updated",
-    });
-  } catch (error) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ success: false, message: error.message });
-  }
-};
-
 // active/inactive a trainer by changing status -> status(active/inactive/rejected)
 const validateTrainer = async (req, res) => {
   try {
@@ -119,6 +79,8 @@ const validateTrainer = async (req, res) => {
 };
 
 // get all trainers with pagination sorting and filtering
+// we can filter by trainer name
+// pagination and sorting is also available but not mandatory
 const getTrainers = async (req, res) => {
   try {
     const { page = 1, limit = 10, sort = "-createdAt", queryText } = req.query;
@@ -169,11 +131,80 @@ const getTrainer = async (req, res) => {
   }
 };
 
+// delete a slot time
+const deleteSlot = async (req, res) => {
+  try {
+    const { id: trainerId } = req.params;
+    const { slotId, scheduleTime } = req.body;
+    const trainerInstance = await Trainer.findByIdAndUpdate(
+      trainerId,
+      { $pull: { slotTime: { _id: slotId } } },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    // after deleting a slot time, update bookingModel to courseStatus:cancelled and paymentStatus:refunded
+    const updateBooking = await TrainerBooking.updateMany(
+      {
+        trainer: trainerId,
+        "slotTime.scheduleTime": scheduleTime,
+      },
+      { courseStatus: "cancelled", paymentStatus: "refunded" }
+    );
+    if (!trainerInstance) {
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ success: false, message: "Trainer not found" });
+      return;
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: trainerInstance,
+      message: "Slot time deleted",
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: error.message });
+  }
+};
+
+// add new slot time
+const addSlot = async (req, res) => {
+  try {
+    const { id: trainerId } = req.params;
+    const trainerInstance = await Trainer.findByIdAndUpdate(
+      trainerId,
+      { $push: { slotTime: req.body.slotTime }, classes: req.body.classes },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!trainerInstance) {
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ success: false, message: "Trainer not found" });
+      return;
+    }
+    res.status(StatusCodes.CREATED).json({
+      success: true,
+      data: trainerInstance,
+      message: "Slot time added",
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: error.message });
+  }
+};
 module.exports = {
   addTrainer,
   updateTrainer,
-  updateBreakTime,
   validateTrainer,
   getTrainers,
   getTrainer,
+  deleteSlot,
+  addSlot,
 };

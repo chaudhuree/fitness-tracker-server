@@ -18,10 +18,6 @@ const TrainerBookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    date: { //-> booking training date
-      type: Date,
-      required: true,
-    },
     slotTime: {
       type: slotTimeSchema,
       required: true,
@@ -31,10 +27,15 @@ const TrainerBookingSchema = new mongoose.Schema(
       enum: ["basic", "standard", "premium"],
       default: "basic",
     },
-    status: {
+    paymentStatus: {
       type: String,
-      enum: ["pending", "approved", "cancelled"],
+      enum: ["pending", "approved", "cancelled", "refunded"],
       default: "pending",
+    },
+    courseStatus: {
+      type: String,
+      enum: ["completed", "inprogress", "cancelled"],
+      default: "inprogress",
     },
     traisactionId: {
       type: String,
@@ -59,11 +60,12 @@ module.exports = mongoose.model("TrainerBooking", TrainerBookingSchema);
   "user": "60e5f4b5c3e9d3b3f0f3b3b3",
   "date": "2021-07-08", 
   "slotTime": {
-    "slotName": "Morning",
-    "scheduleTime": "6am"
+    "slotName": "morning",
+    "scheduleTime": "6.00 AM"
   },
   "package": "premium",
-  "status": "approved",
+  "paymentStatus": "approved",
+  "courseStatus": "inprogress",
   "traisactionId": "123456",
   "price": 100
 }
