@@ -15,3 +15,5 @@ router.get("/classbooking/all", getAllClassBookings);
 router.get("/classbooking/user/:userId", getAllBookingsByUser);
 router.get("/classbooking/totalprice", totalEarnings);
 router.get("/classbooking/class/:classId", getAllClassBookingsByClassId);
+
+module.exports = router;
