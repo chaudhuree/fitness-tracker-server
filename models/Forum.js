@@ -6,6 +6,10 @@ const forumSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide a title"],
     },
+    subtitle: {
+      type: String,
+      required: [true, "Please provide a subtitle"],
+    },
     image: {
       type: String,
       required: [true, "Please provide an image"],

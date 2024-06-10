@@ -37,7 +37,7 @@ const TrainerBookingSchema = new mongoose.Schema(
       enum: ["completed", "inprogress", "cancelled"],
       default: "inprogress",
     },
-    traisactionId: {
+    transactionId: {
       type: String,
       required: true,
     },

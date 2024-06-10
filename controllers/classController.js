@@ -68,7 +68,7 @@ const getClasses = async (req, res) => {
     const { page = 1, limit = 6, search = "", sort = "createdAt" } = req.query;
     const classes = await Class.find({
       name: { $regex: search, $options: "i" },
-    })
+    }).populate("trainers")
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .sort({ [sort]: -1 });
