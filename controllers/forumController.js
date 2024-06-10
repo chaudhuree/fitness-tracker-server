@@ -21,7 +21,7 @@ const addForum = async (req, res) => {
 
 // get all forums with pagination and sorting
 const getAllForums = async (req, res) => {
-  const { page = 1, limit = 4 } = req.query;
+  const { page = 1, limit = 6 } = req.query;
   try {
     const forums = await Forum.find()
       .populate("author")
@@ -107,25 +107,41 @@ const deleteForum = async (req, res) => {
 };
 
 // upvote a forum
-const upvoteForum = async (req, res) => {
+const voteForum = async (req, res) => {
   const { id } = req.params;
+  const{userId,vote} = req.body;
   try {
-    const forum = await Forum.findByIdAndUpdate(
-      id,
-      { $inc: { upvotes: 1 } },
-      { new: true }
-    );
+    const forum = await Forum.findById(id);
     if (!forum) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: `No forum with id: ${id}` });
     }
+    const upvotesIndex = forum.upvotes.indexOf(userId);
+    const downvotesIndex = forum.downvotes.indexOf(userId);
+
+    if(vote === 'upvote'){
+        if(upvotesIndex === -1){
+            forum.upvotes.push(userId);
+            if(downvotesIndex !== -1){
+            forum.downvotes.splice(downvotesIndex,1);
+            }
+        }
+    }else if(vote === 'downvote'){
+        if(downvotesIndex === -1){
+            forum.downvotes.push(userId);
+            if(upvotesIndex !== -1){
+            forum.upvotes.splice(upvotesIndex,1);
+            }
+        }
+    }
+    await forum.save();
     res
       .status(StatusCodes.OK)
       .json({
         success: true,
         data: forum,
-        message: "Forum upvoted successfully",
+        message: `Forum ${vote}d successfully`,
       });
   } catch (error) {
     res
@@ -135,32 +151,32 @@ const upvoteForum = async (req, res) => {
 };
 
 // downvote a forum
-const downvoteForum = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const forum = await Forum.findByIdAndUpdate(
-      id,
-      { $inc: { downvotes: 1 } },
-      { new: true }
-    );
-    if (!forum) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: `No forum with id: ${id}` });
-    }
-    res
-      .status(StatusCodes.OK)
-      .json({
-        success: true,
-        data: forum,
-        message: "Forum downvoted successfully",
-      });
-  } catch (error) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ success: false, message: error.message });
-  }
-};
+// const downvoteForum = async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const forum = await Forum.findByIdAndUpdate(
+//       id,
+//       { $inc: { downvotes: 1 } },
+//       { new: true }
+//     );
+//     if (!forum) {
+//       return res
+//         .status(StatusCodes.NOT_FOUND)
+//         .json({ success: false, message: `No forum with id: ${id}` });
+//     }
+//     res
+//       .status(StatusCodes.OK)
+//       .json({
+//         success: true,
+//         data: forum,
+//         message: "Forum downvoted successfully",
+//       });
+//   } catch (error) {
+//     res
+//       .status(StatusCodes.BAD_REQUEST)
+//       .json({ success: false, message: error.message });
+//   }
+// };
 
 // forum by author id
 const getForumByAuthorId = async (req, res) => {
@@ -175,13 +191,14 @@ const getForumByAuthorId = async (req, res) => {
   }
 };
 
+
+
 module.exports = {
   addForum,
   getAllForums,
   getForum,
   updateForum,
   deleteForum,
-  upvoteForum,
-  downvoteForum,
+  voteForum,
   getForumByAuthorId,
 };

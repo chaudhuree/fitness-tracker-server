@@ -24,12 +24,10 @@ const forumSchema = new mongoose.Schema(
       required: true,
     },
     upvotes: {
-      type: Number,
-      default: 0,
+      type: [mongoose.Schema.Types.ObjectId],
     },
     downvotes: {
-      type: Number,
-      default: 0,
+      type: [mongoose.Schema.Types.ObjectId],
     },
   },
   { timestamps: true, versionKey: false }
