@@ -150,33 +150,6 @@ const voteForum = async (req, res) => {
   }
 };
 
-// downvote a forum
-// const downvoteForum = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const forum = await Forum.findByIdAndUpdate(
-//       id,
-//       { $inc: { downvotes: 1 } },
-//       { new: true }
-//     );
-//     if (!forum) {
-//       return res
-//         .status(StatusCodes.NOT_FOUND)
-//         .json({ success: false, message: `No forum with id: ${id}` });
-//     }
-//     res
-//       .status(StatusCodes.OK)
-//       .json({
-//         success: true,
-//         data: forum,
-//         message: "Forum downvoted successfully",
-//       });
-//   } catch (error) {
-//     res
-//       .status(StatusCodes.BAD_REQUEST)
-//       .json({ success: false, message: error.message });
-//   }
-// };
 
 // forum by author id
 const getForumByAuthorId = async (req, res) => {
