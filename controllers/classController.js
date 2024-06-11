@@ -90,7 +90,7 @@ const getClasses = async (req, res) => {
 const getClass = async (req, res) => {
   try {
     const { id: classId } = req.params;
-    const classInstance = await Class.findById(classId);
+    const classInstance = await Class.findById(classId).populate("trainers");
     if (!classInstance) {
       res
         .status(StatusCodes.NOT_FOUND)

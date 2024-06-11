@@ -6,6 +6,12 @@ const Class = require("../models/Class");
 const addClassBooking = async (req, res) => {
   try {
     const classBookingInstance = await ClassBooking.create(req.body);
+    if (!classBookingInstance) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: "Class Booking Failed",
+      });
+    }
     const classInstance = await Class.findByIdAndUpdate(
       req.body.class,
       { $inc: { bookingCount: 1 } },
