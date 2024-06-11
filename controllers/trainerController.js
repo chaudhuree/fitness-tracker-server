@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const Trainer = require("../models/Trainer");
 const TrainerBooking = require("../models/TrainerBooking");
+const User = require("../models/User");
 // add a new trainer
 const addTrainer = async (req, res) => {
   try {
@@ -47,7 +48,7 @@ const updateTrainer = async (req, res) => {
   }
 };
 
-// active/inactive a trainer by changing status -> status(active/inactive/rejected)
+// active/inactive a trainer by changing status -> status(active/rejected)
 const validateTrainer = async (req, res) => {
   try {
     const { id: trainerId } = req.params;
@@ -67,6 +68,14 @@ const validateTrainer = async (req, res) => {
         .json({ success: false, message: "Trainer not found" });
       return;
     }
+    const userInstance = await User.findByIdAndUpdate(
+      trainerInstance.userInfo,
+      { role: status === "active" ? "trainer" : "member" },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     res.status(StatusCodes.OK).json({
       success: true,
       message: `Trainer status updated to: ${status} successfully`,
@@ -88,6 +97,7 @@ const getTrainers = async (req, res) => {
     if (queryText) {
       query.name = { $regex: queryText, $options: "i" };
     }
+    query.status = "active";
     const trainers = await Trainer.find(query)
       .populate("classes")
       .populate("userInfo")
@@ -199,6 +209,36 @@ const addSlot = async (req, res) => {
       .json({ success: false, message: error.message });
   }
 };
+
+// delete a trainer and update the user role to member
+const deleteTrainer = async (req, res) => {
+  try {
+    const { id: trainerId } = req.params;
+    const trainerInstance = await Trainer.findByIdAndDelete(trainerId);
+    if (!trainerInstance) {
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ success: false, message: "Trainer not found" });
+      return;
+    }
+    const userInstance = await User.findByIdAndUpdate(
+      trainerInstance.userInfo,
+      { role: "member" },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Trainer deleted",
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: error.message });
+  }
+};
 module.exports = {
   addTrainer,
   updateTrainer,
@@ -207,4 +247,5 @@ module.exports = {
   getTrainer,
   deleteSlot,
   addSlot,
+  deleteTrainer,
 };

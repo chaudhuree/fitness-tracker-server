@@ -46,5 +46,30 @@ const sendUpdates = async (req, res) => {
   }
 }
 
+// get all subscribers with pagination and search query and sort
+const getSubscribers = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search = '', sort = 'createdAt' } = req.query;
+    const skip = (page - 1) * limit;
+    const subscribers = await NewsLetter.find({
+      name: { $regex: search, $options: 'i' }
+    })
+      .sort({ [sort]: -1 })
+      .limit(limit)
+      .skip(skip);
+    let total = await NewsLetter.countDocuments({
+      name: { $regex: search, $options: 'i' }
+    });
 
-module.exports = { addSubscriber, sendUpdates };
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, subscribers, total });
+  }
+  catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: error.message });
+  }
+}
+
+module.exports = { addSubscriber, sendUpdates, getSubscribers };
