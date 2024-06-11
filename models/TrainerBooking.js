@@ -45,6 +45,11 @@ const TrainerBookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    class:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
+      required: true,
+    }
   },
   {
     timestamps: true,

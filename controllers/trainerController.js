@@ -116,6 +116,33 @@ const getTrainers = async (req, res) => {
   }
 };
 
+// get trainer with status pending for admin with pagination sorting and filtering
+// we can filter by trainer name
+const getPendingTrainers = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, sort = "-createdAt", queryText } = req.query;
+    const query = {};
+    if (queryText) {
+      query.name = { $regex: queryText, $options: "i" };
+    }
+    query.status = "pending";
+    const trainers = await Trainer.find(query)
+      .populate("classes")
+      .populate("userInfo")
+      .limit(limit)
+      .skip(limit * (page - 1))
+      .sort(sort);
+    const totalCount = await Trainer.countDocuments(query);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: { trainers, count: totalCount },
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: error.message });
+  }
+};
 // get a single trainer by id
 const getTrainer = async (req, res) => {
   try {
@@ -248,4 +275,5 @@ module.exports = {
   deleteSlot,
   addSlot,
   deleteTrainer,
+  getPendingTrainers
 };

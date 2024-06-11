@@ -1,11 +1,25 @@
 const { StatusCodes } = require("http-status-codes");
 const TrainerBooking = require("../models/TrainerBooking");
 const User = require("../models/User");
+const Class = require("../models/Class");
+const Trainer = require("../models/Trainer");
 
 // add a new trainer booking
 const addTrainerBooking = async (req, res) => {
   try {
     const trainerBookingInstance = await TrainerBooking.create(req.body);
+    // increment the class booked count
+    const classInstance = await Class.findByIdAndUpdate(
+      req.body.class,
+      { $inc: { bookingCount: 1 } },
+      { new: true }
+    );
+    // increment the trainer booked count
+    const trainerInstance = await Trainer.findByIdAndUpdate(
+      req.body.trainer,
+      { $inc: { bookedCount: 1 } },
+      { new: true }
+    );
     res.status(StatusCodes.CREATED).json({
       success: true,
       data: trainerBookingInstance,
@@ -27,6 +41,7 @@ const getAllTrainerBookings = async (req, res) => {
       const trainerBookings = await TrainerBooking.find({ trainer: trainerId })
         .populate("user")
         .populate("trainer")
+        .populate("class")
         .sort({ createdAt: -1 })
         .limit(limit * 1)
         .skip((page - 1) * limit);
@@ -40,6 +55,7 @@ const getAllTrainerBookings = async (req, res) => {
       const trainerBookings = await TrainerBooking.find()
         .populate("user")
         .populate("trainer")
+        .populate("class")
         .sort({ createdAt: -1 })
         .limit(limit * 1)
         .skip((page - 1) * limit);
