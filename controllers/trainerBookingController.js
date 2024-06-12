@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const mongoose = require("mongoose");
 const TrainerBooking = require("../models/TrainerBooking");
 const User = require("../models/User");
 const Class = require("../models/Class");
@@ -319,6 +320,83 @@ const totalPriceCalculationForTrainer = async (req, res) => {
       .json({ success: false, message: error.message });
   }
 };
+
+// get all booking by class and return total price
+const totalPriceCalculationByClass = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const totalPrice = await TrainerBooking.aggregate([
+      {
+        $match: {
+          class: new mongoose.Types.ObjectId(id),
+          paymentStatus: "approved",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalPrice: { $sum: "$price" },
+        },
+      },
+    ]);
+
+    if (totalPrice.length > 0) {
+      res.status(StatusCodes.OK).json({
+        success: true,
+        data: totalPrice[0].totalPrice,
+        message: "Total price calculated successfully",
+      });
+    } else {
+      res.status(StatusCodes.OK).json({
+        success: true,
+        data: 0,
+        message: "No approved payments found for this class",
+      });
+    }
+  } catch (error) {
+    console.error('Error calculating total price:', error);
+    res.status(StatusCodes.BAD_REQUEST).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+}
+const totalPriceCalculationByClasses = async (req, res) => {
+  try {
+    const totalPrices = await TrainerBooking.aggregate([
+      {
+        $match: {
+          paymentStatus: "approved",
+        },
+      },
+      {
+        $group: {
+          _id: "$class",
+          totalPrice: { $sum: "$price" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          class: "$_id",
+          totalPrice: 1,
+        },
+      },
+    ]);
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: totalPrices,
+      message: "Total prices calculated successfully",
+    });
+  } catch (error) {
+    console.error('Error calculating total prices:', error);
+    res.status(StatusCodes.BAD_REQUEST).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+}
 module.exports = {
   addTrainerBooking,
   getAllTrainerBookings,
@@ -330,4 +408,6 @@ module.exports = {
   getTrainerBookingById,
   totalPriceCalculation,
   totalPriceCalculationForTrainer,
+  totalPriceCalculationByClass,
+  totalPriceCalculationByClasses
 };

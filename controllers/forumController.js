@@ -151,12 +151,22 @@ const voteForum = async (req, res) => {
 };
 
 
-// forum by author id
+// forum by author id with pagination and sorting
 const getForumByAuthorId = async (req, res) => {
+  const { page = 1, limit = 6 } = req.query;
   const { authorId } = req.params;
   try {
-    const forums = await Forum.find({ author: authorId });
-    res.status(StatusCodes.OK).json({ success: true, data: forums });
+    const forums = await Forum.find({author:authorId})
+      .populate("author")
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+    const count = await Forum.countDocuments({author:authorId});
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: { forums, total: count },
+      message: "Forums retrieved successfully",
+    });
   } catch (error) {
     res
       .status(StatusCodes.BAD_REQUEST)

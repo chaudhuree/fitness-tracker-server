@@ -12,7 +12,7 @@ const ClassSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: true,
+      // required: true,
     },
     image: {
       type: String,
@@ -33,7 +33,7 @@ const ClassSchema = new mongoose.Schema(
     },
     startDate: {
       type: Date,
-      required: true,
+      // required: true,
     },
     duration: {
       type: String

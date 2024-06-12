@@ -15,6 +15,6 @@ router.get("/class", getClasses);
 router.post("/class/add", addClass);
 router.get("/class/:id", getClass);
 router.put("/class/update/:id", updateClass);
-router.delete("/class/delete/:id",isLoggedIn,isAdmin, deleteClass);
+router.delete("/class/delete/:id",isLoggedIn, deleteClass);
 
 module.exports = router;
