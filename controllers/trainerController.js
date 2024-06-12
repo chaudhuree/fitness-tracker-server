@@ -237,7 +237,7 @@ const addSlot = async (req, res) => {
     const { id: trainerId } = req.params;
     const trainerInstance = await Trainer.findByIdAndUpdate(
       trainerId,
-      { $push: { slotTime: req.body.slotTime }, classes: req.body.classes },
+      { $push: { slotTime: req.body.slotTime }, classes: req.body.classes,availableDays:req.body.availableDays },
       {
         new: true,
         runValidators: true,
