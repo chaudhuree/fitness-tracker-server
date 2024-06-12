@@ -278,6 +278,12 @@ const totalPriceCalculation = async (req, res) => {
           totalPrice: { $sum: "$price" },
         },
       },
+      {
+        $project: {
+          _id: 0,
+          totalPrice: 1,
+        },
+      }
     ]);
     res.status(StatusCodes.OK).json({
       success: true,
@@ -398,6 +404,57 @@ const totalPriceCalculationByClasses = async (req, res) => {
     });
   }
 }
+
+// get all unique paid members
+// for admin
+const getUniquePaidMembers = async (req, res) => {
+  try {
+    const uniquePaidMembers = await TrainerBooking.aggregate([
+      {
+        $match: {
+          paymentStatus: "approved",
+        },
+      },
+      {
+        $group: {
+          _id: "$user",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $project: {
+          _id: 0,
+          user: {
+            _id: 1,
+            displayName: 1,
+            email: 1,
+          },
+        },
+      }
+    ]);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: uniquePaidMembers,
+      message: "Unique paid members retrieved successfully",
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: error.message });
+  }
+}
+
+
 module.exports = {
   addTrainerBooking,
   getAllTrainerBookings,
@@ -410,5 +467,6 @@ module.exports = {
   totalPriceCalculation,
   totalPriceCalculationForTrainer,
   totalPriceCalculationByClass,
-  totalPriceCalculationByClasses
+  totalPriceCalculationByClasses,
+  getUniquePaidMembers,
 };

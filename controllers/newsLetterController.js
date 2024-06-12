@@ -72,4 +72,19 @@ const getSubscribers = async (req, res) => {
   }
 }
 
-module.exports = { addSubscriber, sendUpdates, getSubscribers };
+// get count of total subscribers
+const getSubscribersCount = async (req, res) => {
+  try {
+    const total = await NewsLetter.countDocuments();
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, total });
+  }
+  catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: error.message });
+  }
+}
+
+module.exports = { addSubscriber, sendUpdates, getSubscribers,getSubscribersCount };

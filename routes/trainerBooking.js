@@ -14,7 +14,8 @@ const {
   totalPriceCalculation,
   totalPriceCalculationForTrainer,
   totalPriceCalculationByClass,
-  totalPriceCalculationByClasses
+  totalPriceCalculationByClasses,
+  getUniquePaidMembers
 } = require("../controllers/trainerBookingController");
 
 
@@ -25,6 +26,8 @@ router.get("/trainerbooking/user", getAllBookingsByUser);
 router.get("/trainerbooking/slottime", getTrainerBookingBySlotTime);
 // total earning by all trainers
 router.get("/trainerbooking/totalprice", totalPriceCalculation);
+// get unique paid members
+router.get("/trainerbooking/uniquepaidmembers", getUniquePaidMembers);
 // total earning by individual classes
 router.get("/trainerbooking/totalprice/classes", totalPriceCalculationByClasses);
 // total earning by a trainer
