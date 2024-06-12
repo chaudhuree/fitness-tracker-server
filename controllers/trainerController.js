@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const Trainer = require("../models/Trainer");
 const TrainerBooking = require("../models/TrainerBooking");
 const User = require("../models/User");
+const mongoose = require("mongoose");
 // add a new trainer
 const addTrainer = async (req, res) => {
   try {
@@ -16,6 +17,29 @@ const addTrainer = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: error.message });
   }
+};
+// get trainer by userId
+const getTrainerByUserId = async (req,res) => {
+  try {
+    const { id } = req.params;
+    const trainerInstance = await Trainer.findOne({userInfo: new mongoose.Types.ObjectId(id)}).populate("classes");
+    if (!trainerInstance) {
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ success: false, message: "Trainer not found" });
+      return;
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: trainerInstance,
+      message: "Trainer found",
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: error.message });
+  }
+  
 };
 
 // update a trainer -> slot time
@@ -275,5 +299,6 @@ module.exports = {
   deleteSlot,
   addSlot,
   deleteTrainer,
-  getPendingTrainers
+  getPendingTrainers,
+  getTrainerByUserId
 };

@@ -11,7 +11,8 @@ const {
   deleteSlot,
   addSlot,
   deleteTrainer,
-  getPendingTrainers
+  getPendingTrainers,
+  getTrainerByUserId
 } = require("../controllers/trainerController.js");
 
 router.post("/trainer/add", addTrainer);
@@ -23,5 +24,6 @@ router.put("/trainer/update/:id", updateTrainer); //slot time(available time slo
 router.delete("/trainer/slot/delete/:id", deleteSlot); //delete slot time
 router.put("/trainer/slot/add/:id", addSlot); //add slot time
 router.delete("/trainer/delete/:id", deleteTrainer); //delete trainer
+router.get("/trainer/user/:id", getTrainerByUserId); //get trainer by user id
 
 module.exports = router;

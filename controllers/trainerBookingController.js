@@ -116,6 +116,7 @@ const getAllBookingsByUser = async (req, res) => {
       const userBookings = await TrainerBooking.find({ user: userId })
         .populate("user")
         .populate("trainer")
+        .populate("class")
         .sort({ createdAt: -1 })
         .limit(limit * 1)
         .skip((page - 1) * limit);
